@@ -1,0 +1,19 @@
+set(sources
+    src/puzzle15/platform/canvas.cpp
+    src/puzzle15/platform/canvas.h
+    src/puzzle15/platform/error.cpp
+    src/puzzle15/platform/error.h
+    src/puzzle15/platform/game_control.cpp
+    src/puzzle15/platform/game_control.h
+    src/puzzle15/platform/game_window.cpp
+    src/puzzle15/platform/game_window.h
+    src/puzzle15/platform/handles.h
+    src/puzzle15/platform/main.cpp
+    src/puzzle15/platform/res/Resource.rc
+    src/puzzle15/platform/res/resource.h
+    src/puzzle15/platform/stdafx.h
+    src/puzzle15/platform/thunk.cpp
+    src/puzzle15/platform/thunk.h
+    src/puzzle15/platform/window.cpp
+    src/puzzle15/platform/window.h
+)
