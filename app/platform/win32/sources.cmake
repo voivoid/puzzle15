@@ -3,8 +3,8 @@ set(sources
     src/puzzle15/platform/canvas.h
     src/puzzle15/platform/error.cpp
     src/puzzle15/platform/error.h
-    src/puzzle15/platform/game_control.cpp
-    src/puzzle15/platform/game_control.h
+    src/puzzle15/platform/game_widget.cpp
+    src/puzzle15/platform/game_widget.h
     src/puzzle15/platform/game_window.cpp
     src/puzzle15/platform/game_window.h
     src/puzzle15/platform/handles.h

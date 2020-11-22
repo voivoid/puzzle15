@@ -3,7 +3,7 @@
 #include "puzzle15/assertions.h"
 #include "puzzle15/board.h"
 #include "puzzle15/platform/canvas.h"
-#include "puzzle15/platform/game_control.h"
+#include "puzzle15/platform/game_widget.h"
 #include "puzzle15/platform_iface.h"
 
 #include <algorithm>
@@ -12,7 +12,7 @@
 namespace puzzle15
 {
 
-game_control::game_control( const HINSTANCE instance, const HWND parent )
+game_widget::game_widget( const HINSTANCE instance, const HWND parent )
 {
   m_controller = make_controller();
 
@@ -30,9 +30,9 @@ game_control::game_control( const HINSTANCE instance, const HWND parent )
   p15_ensure( m_wnd );
 }
 
-game_control::~game_control() = default;
+game_widget::~game_widget() = default;
 
-LRESULT CALLBACK game_control::wnd_proc( const UINT msg, const WPARAM wParam, const LPARAM lParam )
+LRESULT CALLBACK game_widget::wnd_proc( const UINT msg, const WPARAM wParam, const LPARAM lParam )
 {
   switch ( msg )
   {
@@ -46,13 +46,13 @@ LRESULT CALLBACK game_control::wnd_proc( const UINT msg, const WPARAM wParam, co
   return ::DefWindowProc( m_wnd, msg, wParam, lParam );
 }
 
-hdc_canvas game_control::make_canvas( const PAINTSTRUCT& /*ps*/, HDC dc ) const
+hdc_canvas game_widget::make_canvas( const PAINTSTRUCT& /*ps*/, HDC dc ) const
 {
   hdc_canvas canvas( dc, get_client_size() );
   return canvas;
 }
 
-LRESULT game_control::on_paint()
+LRESULT game_widget::on_paint()
 {
   PAINTSTRUCT ps;
   HDC dc = ::BeginPaint( m_wnd, &ps );
@@ -71,7 +71,7 @@ LRESULT game_control::on_paint()
   return 0;
 }
 
-LRESULT game_control::on_size( const WORD /*width*/, const WORD /*height*/ )
+LRESULT game_widget::on_size( const WORD /*width*/, const WORD /*height*/ )
 {
   const auto cell = calc_current_cell_side();
   m_font.reset( ::CreateFont( -( cell / 3 ), 0, 0, 0, FW_DONTCARE, 0, 0, 0, DEFAULT_CHARSET, OUT_OUTLINE_PRECIS, CLIP_DEFAULT_PRECIS, CLEARTYPE_QUALITY, VARIABLE_PITCH, NULL ) );
@@ -81,17 +81,17 @@ LRESULT game_control::on_size( const WORD /*width*/, const WORD /*height*/ )
   return 0;
 }
 
-LRESULT game_control::on_left_mouse_btn_down( const DWORD /*x*/, const DWORD /*y*/ )
+LRESULT game_widget::on_left_mouse_btn_down( const DWORD /*x*/, const DWORD /*y*/ )
 {
   return 0;
 }
 
-LRESULT game_control::on_left_mouse_btn_up( const DWORD /*x*/, const DWORD /*y*/ )
+LRESULT game_widget::on_left_mouse_btn_up( const DWORD /*x*/, const DWORD /*y*/ )
 {
   return 0;
 }
 
-LRESULT game_control::on_right_mouse_btn_up( const DWORD x, const DWORD y )
+LRESULT game_widget::on_right_mouse_btn_up( const DWORD x, const DWORD y )
 {
   const auto [ x_cell_idx, y_cell_idx ] = calc_cell_index( x, y );
   bool handled                          = m_controller->handle_right_mouse_click( x_cell_idx, y_cell_idx );
@@ -103,7 +103,7 @@ LRESULT game_control::on_right_mouse_btn_up( const DWORD x, const DWORD y )
   return 0;
 }
 
-size game_control::calc_size( const size window_size ) const
+size game_widget::calc_size( const size window_size ) const
 {
   const auto board_dims = m_controller->get_board_dims();
   const auto cell_side  = calc_cell_side( window_size );
@@ -111,18 +111,18 @@ size game_control::calc_size( const size window_size ) const
   return { cell_side * static_cast<coord>( board_dims.cols ), cell_side * static_cast<coord>( board_dims.rows ) };
 }
 
-void game_control::reset_game()
+void game_widget::reset_game()
 {
   m_controller->reset_game();
   redraw();
 }
 
-void game_control::redraw()
+void game_widget::redraw()
 {
   p15_ensure( ::InvalidateRect( m_wnd, nullptr, TRUE ) );
 }
 
-coord game_control::calc_cell_side( const size available_size ) const
+coord game_widget::calc_cell_side( const size available_size ) const
 {
   const auto board_dims      = m_controller->get_board_dims();
   const auto min_width_size  = available_size.width / board_dims.cols;
@@ -131,12 +131,12 @@ coord game_control::calc_cell_side( const size available_size ) const
   return std::min( static_cast<coord>( min_width_size ), static_cast<coord>( min_height_size ) );
 }
 
-coord game_control::calc_current_cell_side() const
+coord game_widget::calc_current_cell_side() const
 {
   return calc_cell_side( get_client_size() );
 }
 
-pos game_control::calc_cell_index( const DWORD x, const DWORD y )
+pos game_widget::calc_cell_index( const DWORD x, const DWORD y )
 {
   assert( get_client_size().width % m_controller->get_board_dims().cols == 0 );
   assert( get_client_size().height % m_controller->get_board_dims().rows == 0 );

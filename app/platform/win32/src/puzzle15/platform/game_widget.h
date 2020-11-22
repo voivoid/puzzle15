@@ -9,11 +9,11 @@ namespace puzzle15
 {
 struct controller;
 struct hdc_canvas;
-class game_control : public base_window
+class game_widget : public base_window
 {
 public:
-  game_control( HINSTANCE instance, HWND parent );
-  ~game_control();
+  game_widget( HINSTANCE instance, HWND parent );
+  ~game_widget();
 
   void reset_game();
   size calc_size( size window_size ) const;

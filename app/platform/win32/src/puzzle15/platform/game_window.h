@@ -5,7 +5,7 @@
 namespace puzzle15
 {
 
-class game_control;
+class game_widget;
 class game_window final : public base_window
 {
 public:
@@ -24,12 +24,12 @@ private:
   LRESULT handle_menu_command( int menu_id );
 
   void quit();
-  void update_game_control_pos();
+  void update_game_widget_pos();
 
   size calc_border() const;
 
 private:
-  std::unique_ptr<game_control> m_game_control;
+  std::unique_ptr<game_widget> m_game_widget;
 };
 
 }  // namespace puzzle15
