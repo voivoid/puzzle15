@@ -7,15 +7,16 @@ namespace puzzle15
 
 namespace
 {
-void draw_cell( canvas& canvas, const board::cell& cell, const point left_top, const coord size )
+void draw_cell( canvas& canvas, const board::cell& cell, const rectangle& cell_rect )
 {
-  canvas.draw_rect( { left_top.x, left_top.y, left_top.x + size, left_top.y + size } );
-  canvas.draw_text( { left_top, { left_top.x + size, left_top.y + size } }, std::to_wstring( cell.num ) );
+  p15_assert( cell.num );
+  canvas.draw_rect( cell_rect );
+  canvas.draw_text( cell_rect, std::to_wstring( *cell.num ) );
 }
 
 }  // namespace
 
-game::game() : m_board( 4, 4 )
+game::game() : m_board( 4, 4 ), m_moves( 0 )
 {
   m_board.serial_fill();
 }
@@ -27,30 +28,61 @@ dims game::get_board_dims() const
 
 void game::reset_game()
 {
+  m_moves      = 0;
+  m_start_time = std::chrono::steady_clock::now();
   m_board.random_fill();
 }
 
-void game::draw_frame( const coord cell_size, canvas& canvas )
+void game::draw_board( canvas& canvas )
 {
-  const coord border = 5;
-  m_board.for_each_cell( [ &canvas, border, cell_size ]( const size_t x_idx, const size_t y_idx, const board::opt_cell& cell ) {
-    if ( cell )
-    {
-      const int x = border + static_cast<int>( x_idx * cell_size );
-      const int y = border + static_cast<int>( y_idx * cell_size );
-      draw_cell( canvas, *cell, { x, y }, ( cell_size - border * 2 ) );
-    }
-  } );
+  constexpr coord cell_border = 5;
+
+  const coord cell_side      = static_cast<coord>( canvas.cell_side() );
+  const coord cell_rect_side = cell_side - ( cell_border * 2 );
+  p15_assert( cell_rect_side > 0 );
+
+  m_board.for_each_cell(
+      [ &canvas, cell_side, cell_rect_side ]( const size_t x_idx, const size_t y_idx, const board::cell& cell )
+      {
+        if ( cell.num )
+        {
+          const int rect_left  = cell_border + static_cast<coord>( x_idx * cell_side );
+          const int rect_top   = cell_border + static_cast<coord>( y_idx * cell_side );
+          const point left_top = { rect_left, rect_top };
+
+          const rectangle cell_rect = { left_top, left_top + cell_rect_side };
+          draw_cell( canvas, cell, cell_rect );
+        }
+      } );
 }
 
-bool game::handle_right_mouse_click( size_t x_cell_idx, size_t y_cell_idx )
+std::optional<cell_swapped> game::handle_right_mouse_click( size_t x_cell_idx, size_t y_cell_idx )
 {
-  return m_board.move_cell_to_next_free_cell( { x_cell_idx, y_cell_idx } );
+  auto cell_swapped = m_board.try_swap_cell_with_empty_neighbour( { x_cell_idx, y_cell_idx } );
+  if ( cell_swapped )
+  {
+    ++m_moves;
+  }
+  return cell_swapped;
 }
 
 std::unique_ptr<controller> make_controller()
 {
   return std::unique_ptr<controller>{ new game };
+}
+
+game_stats game::get_game_stats() const
+{
+  game_stats stats{};
+  stats.moves = m_moves;
+
+  if ( m_start_time )
+  {
+    const auto duration    = std::chrono::steady_clock::now() - *m_start_time;
+    stats.time_since_start = std::chrono::duration_cast<std::chrono::seconds>( duration );
+  }
+
+  return stats;
 }
 
 }  // namespace puzzle15

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "puzzle15/assertions.h"
+
 namespace puzzle15
 {
 using coord = int;
@@ -11,16 +13,27 @@ struct point
   coord y;
 };
 
-struct pos
+inline point operator+( point p, coord c )
+{
+  return { p.x + c, p.y + c };
+}
+
+struct cell_indices
 {
   index x_idx;
   index y_idx;
 };
 
-struct size
+struct rect_size
 {
-  coord width;
-  coord height;
+  size_t width;
+  size_t height;
+
+  rect_size crop_height( size_t s ) const
+  {
+    p15_ensure( height >= s );
+    return { width, height - s };
+  }
 };
 
 struct dims
@@ -35,7 +48,7 @@ struct line
   point p2;
 };
 
-struct rect
+struct rectangle
 {
   point left_top;
   point right_bottom;

@@ -19,8 +19,8 @@ class base_window
 public:
   void destroy();
   void show( int cmd_show );
-  void move( point p, size s );
-  size get_client_size() const;
+  void move( point p, rect_size s );
+  rect_size get_client_size() const;
 
 protected:
   base_window();

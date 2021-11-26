@@ -6,6 +6,7 @@ namespace puzzle15
 {
 
 class game_widget;
+class game_status_bar;
 class game_window final : public base_window
 {
 public:
@@ -26,10 +27,11 @@ private:
   void quit();
   void update_game_widget_pos();
 
-  size calc_border() const;
+  rect_size calc_border( const rect_size& client_size ) const;
 
 private:
   std::unique_ptr<game_widget> m_game_widget;
+  std::unique_ptr<game_status_bar> m_status_bar;
 };
 
 }  // namespace puzzle15

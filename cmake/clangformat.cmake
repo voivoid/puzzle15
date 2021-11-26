@@ -1,6 +1,6 @@
 find_program(ClangFormat clang-format)
 if(ClangFormat)
-  set(FormatTargets puzzle15 puzzle15_lib puzzle15_tests)
+  set(FormatTargets puzzle15 puzzle15_lib puzzle15_tests) 
   foreach(FormatTarget ${FormatTargets})
     get_target_property(FormatTargetSources ${FormatTarget} SOURCES)
     get_target_property(FormatTargetDir ${FormatTarget} SOURCE_DIR)

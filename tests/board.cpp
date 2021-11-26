@@ -47,7 +47,7 @@ TEST_CASE( "New board is empty", "[board]" )
   {
     for ( size_t y = 0; y < height; ++y )
     {
-      CHECK( !b.get_cell( { x, y } ) );
+      CHECK( !b.get_cell( { x, y } ).num );
     }
   }
 }

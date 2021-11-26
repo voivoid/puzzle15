@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "puzzle15/assertions.h"
 #include "puzzle15/platform/error.h"
+
+#include "puzzle15/assertions.h"
 
 #include <stdexcept>
 #include <string>
@@ -33,7 +34,8 @@ void throw_last_error( const char* const msg )
 
 void show_exception_message( const char* const message )
 {
-  p15_ensure( ::MessageBoxA( nullptr, message, "Unhandled exception", MB_OK | MB_ICONERROR ) );
+  bool success = ::MessageBoxA( nullptr, message, "Unhandled exception", MB_OK | MB_ICONERROR ) != 0;
+  p15_assert( success );
 }
 
 }  // namespace puzzle15

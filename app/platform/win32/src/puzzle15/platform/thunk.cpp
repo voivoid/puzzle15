@@ -1,14 +1,14 @@
 #include "stdafx.h"
 
-#include "puzzle15/assertions.h"
 #include "puzzle15/platform/thunk.h"
-#include "puzzle15/platform/window.h"
+
+#include "puzzle15/assertions.h"
 
 namespace
 {
 constexpr std::byte operator"" _b( unsigned long long b )
 {
-  assert( b <= 255 );
+  p15_assert( b <= 255 );
   return std::byte( b );
 }
 }  // namespace
@@ -17,7 +17,8 @@ namespace puzzle15
 {
 void thunk::free_trampoline::operator()( void* p ) const
 {
-  p15_ensure( ::VirtualFree( p, 0, MEM_RELEASE ) );
+  bool success = ::VirtualFree( p, 0, MEM_RELEASE );
+  p15_assert( success );
 }
 
 std::pair<WNDPROC, WNDPROC> thunk::generate_callbacks( const base_window* const window, HWND* const wnd_ptr )
@@ -26,11 +27,11 @@ std::pair<WNDPROC, WNDPROC> thunk::generate_callbacks( const base_window* const 
   static const std::byte function_code[] = {
     // clang-format off
     
-    // first wndproc
+    // initial wndproc; it stores hwnd argument to m_wnd; as soon as m_wnd is initialzed base wndproc can be used
     0x48_b, 0xB8_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b,  // movabs rax, &wnd_ptr
     0x48_b, 0x89_b, 0x08_b,                                                          // mov QWORD PTR [rax],rcx
 
-    // second wndproc
+    // base wndproc; make a 'base_window::wnd_proc' virtual call
     0x48_b, 0xB9_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b, 0x00_b,  // movabs rcx, &window
     0x48_b, 0x8B_b, 0x01_b,                                                          // mov rax,[rcx]
     0xff_b, 0x20_b                                                                   // jmp [rax]       ( virtual call )

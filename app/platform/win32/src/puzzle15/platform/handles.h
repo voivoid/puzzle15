@@ -14,7 +14,8 @@ struct safe_handle_deleter
 
   void operator()( const T font ) const
   {
-    p15_ensure( ::DeleteObject( font ) );
+    bool success = ::DeleteObject( font );
+    p15_assert( success );
   }
 };
 

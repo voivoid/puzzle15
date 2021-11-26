@@ -1,5 +1,6 @@
 #pragma once
 
+#include "puzzle15/game_events.h"
 #include "puzzle15/geo.h"
 
 #include <optional>
@@ -13,7 +14,7 @@ class board
 public:
   struct cell
   {
-    size_t num;
+    std::optional<size_t> num;
   };
 
   board( size_t cols, size_t rows );
@@ -21,11 +22,10 @@ public:
   size_t get_cols() const;
   size_t get_rows() const;
 
-  using opt_cell = std::optional<cell>;
-  const opt_cell& get_cell( pos p ) const;
+  const cell& get_cell( cell_indices c ) const;
 
-  void swap_cells( pos p1, pos p2 );
-  bool move_cell_to_next_free_cell( pos p );
+  void swap_cells( cell_indices c1, cell_indices c2 );
+  std::optional<cell_swapped> try_swap_cell_with_empty_neighbour( cell_indices cell_to_swap );
 
   void clear();
   void random_fill( size_t free_cells = 1 );
@@ -45,17 +45,15 @@ public:
     }
   }
 
-  bool is_free_cell( pos p );
+  bool is_free_cell( cell_indices c );
 
 private:
-  size_t get_cells_vector_idx( pos p ) const;
-
-  std::vector<pos> get_neighbours( pos p ) const;
+  size_t get_cells_vector_idx( cell_indices c ) const;
 
 private:
   size_t m_cols;
   size_t m_rows;
 
-  std::vector<opt_cell> m_cells;
+  std::vector<cell> m_cells;
 };
 }  // namespace puzzle15

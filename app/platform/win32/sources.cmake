@@ -3,12 +3,16 @@ set(sources
     src/puzzle15/platform/canvas.h
     src/puzzle15/platform/error.cpp
     src/puzzle15/platform/error.h
+    src/puzzle15/platform/game_status_bar.cpp
+    src/puzzle15/platform/game_status_bar.h
     src/puzzle15/platform/game_widget.cpp
     src/puzzle15/platform/game_widget.h
     src/puzzle15/platform/game_window.cpp
     src/puzzle15/platform/game_window.h
     src/puzzle15/platform/handles.h
     src/puzzle15/platform/main.cpp
+    src/puzzle15/platform/msg_loop.cpp
+    src/puzzle15/platform/msg_loop.h
     src/puzzle15/platform/res/Resource.rc
     src/puzzle15/platform/res/resource.h
     src/puzzle15/platform/stdafx.h

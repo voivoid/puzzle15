@@ -1,28 +1,21 @@
 #include "stdafx.h"
 
-#include "puzzle15/assertions.h"
 #include "puzzle15/platform/error.h"
 #include "puzzle15/platform/game_window.h"
+#include "puzzle15/platform/msg_loop.h"
 
+#include <crtdbg.h>
 #include <stdexcept>
 
 namespace
 {
-
-int run_game_loop( const HINSTANCE instance, const int cmd_show )
+int run_game( HINSTANCE instance, int cmd_show )
 {
+  const INITCOMMONCONTROLSEX commctrls{ .dwSize = sizeof( commctrls ), .dwICC = ICC_BAR_CLASSES | ICC_STANDARD_CLASSES };
+  ::InitCommonControlsEx( &commctrls );
+
   auto window = puzzle15::game_window( instance, cmd_show );
-
-  MSG msg{};
-  BOOL ret{};
-  while ( ret = ::GetMessage( &msg, nullptr, 0, 0 ), ret > 0 )
-  {
-    ::TranslateMessage( &msg );
-    ::DispatchMessage( &msg );
-  }
-  p15_ensure( ret != -1 );
-
-  return static_cast<int>( msg.wParam );
+  return puzzle15::run_message_loop();
 }
 }  // namespace
 
@@ -30,7 +23,14 @@ int WINAPI wWinMain( HINSTANCE instance, HINSTANCE, PWSTR, int cmd_show )
 {
   try
   {
-    return run_game_loop( instance, cmd_show );
+    int retval = run_game( instance, cmd_show );
+
+#ifndef NDEBUG
+    auto has_leaks = _CrtDumpMemoryLeaks();
+    p15_assert( !has_leaks );
+#endif
+
+    return retval;
   }
   catch ( const std::exception& ex )
   {

@@ -3,18 +3,29 @@
 #include <cassert>
 #include <stdexcept>
 
-#if defined( P15_ENSURE )
-#  error P15_ENSURE redefinition
+#if defined( p15_ensure )
+#  error "p15_ensure redefinition"
+#else
+#  ifdef NDEBUG
+#    define p15_ensure( expr )                                                                                                             \
+      {                                                                                                                                    \
+        if ( !( expr ) )                                                                                                                   \
+        {                                                                                                                                  \
+          throw std::runtime_error( #expr " failed" );                                                                                     \
+        }                                                                                                                                  \
+      };
+#  else
+#    define p15_ensure assert
+#  endif
 #endif
 
-#ifdef NDEBUG
-#  define p15_ensure( expr )                                                                                                               \
-    {                                                                                                                                      \
-      if ( !( expr ) )                                                                                                                     \
-      {                                                                                                                                    \
-        throw std::runtime_error( #expr " failed" );                                                                                       \
-      }                                                                                                                                    \
-    };
+
+#if defined( p15_assert )
+#  error "p15_assert redefinition"
 #else
-#  define p15_ensure assert
+#  ifdef NDEBUG
+#    define p15_assert( expr ) (void)expr
+#  else
+#    define p15_assert assert
+#  endif
 #endif
